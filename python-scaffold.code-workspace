@@ -1,0 +1,112 @@
+{
+    "folders": [{
+            "path": "./python-scaffold",
+        },
+        {
+            "name": "root",
+            "path": ".",
+        }
+    ],
+    "settings": {
+        "editor.tabSize": 4,
+        "files.exclude": {
+            "**/.git": true,
+            "**/.mypy_cache": true,
+            "**/.pytest_cache": true,
+            "**/.tox": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/.venv": true,
+            "python-scaffold": true, // remove `python-scaffold` from `root` view
+        },
+
+        "python.defaultInterpreterPath": ".venv/bin/python",
+
+        "python.linting.flake8Enabled": true,
+        "python.linting.mypyEnabled": true,
+        "python.linting.pydocstyleEnabled": true,
+        "python.linting.enabled": true,
+
+        // also could be necessary for the above to work correctly:
+        "python.linting.flake8Args": ["--config=./.flake8"],
+        "python.linting.mypyArgs": ["--config-file=./pyproject.toml"],
+        // default behaviour
+        "python.linting.pydocstyleArgs": ["--config=./pyproject.toml", "--match='(?!test_).*\\.py'"],
+
+        "python.formatting.provider": "black",
+
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": [
+            "./tests",
+            "-p",
+            "no:sugar",
+            "--no-cov",
+            "-vvv",
+            "-s",
+            "-n 0",
+        ],
+        "[python]": {
+            "diffEditor.ignoreTrimWhitespace": false,
+            "editor.wordBasedSuggestions": false,
+            "editor.formatOnSave": true,
+        },
+        "[json]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.tabSize": 2,
+            "editor.formatOnSave": true,
+        },
+        "[markdown]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.tabSize": 2,
+            "editor.formatOnSave": true,
+        },
+        "[toml]": {
+            "editor.defaultFormatter": "tamasfe.even-better-toml",
+            "editor.tabSize": 2,
+            "editor.formatOnSave": true,
+        },
+        "[github-actions-workflow]": {
+            "editor.tabSize": 2,
+        },
+        "[dockercompose]": {
+            "editor.insertSpaces": true,
+            "gitlens.codeLens.symbolScopes": [
+            "!module"
+        ],
+            "editor.tabSize": 2,
+            "editor.autoIndent": "advanced",
+            "editor.quickSuggestions": {
+                "other": true,
+                "comments": false,
+                "strings": true
+            }
+        },
+        "[yaml]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.formatOnSave": true,
+            "editor.insertSpaces": true,
+            "editor.tabSize": 2,
+            "editor.autoIndent": "keep",
+            "diffEditor.ignoreTrimWhitespace": false,
+        },
+        "autoDocstring.customTemplatePath": "../docs/settings/vscode/python-docstring-template.mustache",
+    },
+    "extensions": {
+        "recommendations": ["esbenp.prettier-vscode", "tamasfe.even-better-toml", "njpwerner.autodocstring", "github.vscode-github-actions"]
+    },
+    "launch": {
+        "configurations": [{
+            "name": "Debug python_scaffold",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "purpose": ["debug-test"],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }]
+    }
+}

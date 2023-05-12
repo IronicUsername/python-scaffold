@@ -1,0 +1,65 @@
+name: Test & Lint - python_scaffold
+on:
+  - pull_request
+  - workflow_call
+
+jobs:
+  test_python_scaffold:
+    name: Lint & Test
+    runs-on: [ubuntu-latest]
+    container:
+      image: acidrain/python-poetry:3.10-slim
+
+    services:
+      sftp:
+        image: atmoz/sftp:alpine
+        ports:
+          - 8008:22
+        env:
+          SFTP_USERS: "username:password:1001:1001:/home/username:/bin/bash:0775"
+        options: >-
+          --health-cmd "nc -zv localhost 22 > /dev/null && echo 'SFTP server is running' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres:
+        image: postgres:14.7-alpine
+        env:
+          POSTGRES_DB: "postgres"
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      EXTERNAL_API_AUTH_URL: "http://local.host.auth"
+      EXTERNAL_API_BASE_URL: "http://some.url.localhost"
+      DATABASE_DSN: "postgresql://postgres:postgres@postgres:5432/postgres"
+      SFTP_HOSTNAME: "sftp"
+      SFTP_USERNAME: "username"
+      SFTP_PASSWORD: "password"
+      SFTP_PORT: 22
+
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/python-scaffold
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: install dependencies
+        run: poetry install --no-interaction --no-root
+
+      - name: lint
+        run: poetry run poe style:check
+
+      - name: test
+        run: poetry run poe test -vvv
+
+      - name: success
+        run: echo "success."

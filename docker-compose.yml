@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  database:
+    image: postgres:14.4-alpine
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+  python_scaffold:
+    build:
+      # The `dockerfile` path is relative to the `context` dir
+      context: ./python-scaffold
+    restart: always
+    environment:
+      DATABASE_DSN: "postgresql://postgres:postgres@database:5432/postgres"
+      EXTERNAL_API_AUTH_URL: "http://local.host.auth"
+      EXTERNAL_API_BASE_URL: "http://local.host"
+    ports:
+      - "8002:8001"

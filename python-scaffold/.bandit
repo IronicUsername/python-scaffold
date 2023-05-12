@@ -1,0 +1,6 @@
+# configuration file for flake8-bandit plugin
+# more info: https://pypi.org/project/flake8-bandit/
+
+[bandit]
+exclude = /tests,/venv
+tests: B101

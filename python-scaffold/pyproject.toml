@@ -1,0 +1,162 @@
+[tool.poetry]
+name = "python_scaffold"
+version = "0.1.0"
+description = "Python 3.10 project starter."
+authors = ["IronicUsername <code@trash-economy.io>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+
+fastapi = "^0.94.1"
+fastapi-utils = "^0.2.1"
+uvicorn = "^0.21.1"
+pydantic = { extras = ["email", "dotenv"], version = "^1.10.0" }
+SQLAlchemy = { extras = ["mypy"], version = "^1.4.42" }
+psycopg2-binary = "^2.9.5"
+httpx = "^0.23.3"
+itsdangerous = "^2.1.2"
+python-json-logger = "^2.0.1"
+paramiko = "^3.1.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5"
+flake8-bugbear = "^22.9.23"
+flake8-print = "^5.0.0"
+flake8-blind-except = "^0.2.1"
+flake8-variables-names = "^0.0.5"
+flake8-pytest-style = "^1.7.2"
+flake8-bandit = "^4.1.1"
+flake8-comprehensions = "^3.10.1"
+flake8-raise = "^0.0.5"
+darglint = "^1.5.8"
+pytest = "^7"
+pytest-mypy = "^0.10.3"
+pytest-pydocstyle = "^2.3.2"
+pytest-sugar = "^0.9.4"
+pytest-lazy-fixture = "^0.6.3"
+pytest-xdist = "^2.1.0"
+pytest-cov = { extras = ["toml"], version = "^4.0.0" }
+pytest-mock = "^3.4.0"
+pytest-asyncio = "^0.19.0"
+pytest-datadir = "^1.3.1"
+pytest-freezegun = "^0.4.2"
+pytest-tldr = "^0.2.5"
+mypy = "^0.982"
+pydocstyle = "^6.1.1"
+click = "^7.1.2"
+autoflake8 = "^0.4.0"
+black = "^21.9b0"
+isort = "^5.9.3"
+poethepoet = "^0.16.4"
+types-python-dateutil = "^2.8.19.10"
+respx = "^0.20.1"
+types-paramiko = "^3.0.0.4"
+
+
+[tool.poe.tasks]
+"_black:check" = "poetry run black . --check"
+"_black:fix" = "poetry run black ."
+
+"_isort:check" = "poetry run isort . --check"
+"_isort:fix" = "poetry run isort ."
+
+"_autoflake8:fix" = "poetry run autoflake8 --in-place --expand-star-imports --remove-unused-variables --remove-duplicate-keys --exit-zero-even-if-changed -r src tests "
+"_autoflake8:check" = "poetry run autoflake8 --expand-star-imports --remove-unused-variables --remove-duplicate-keys -r src tests "
+
+"style:check" = { sequence = [
+  "_black:check",
+  "_autoflake8:check",
+  "_isort:check",
+], help = "Check the app code style " }
+"style:fix" = { sequence = [
+  "_black:fix",
+  "_autoflake8:fix",
+  "_isort:fix",
+], help = "Check and autofix the app code style " }
+
+_install = "poetry install"
+
+install = { sequence = [
+  "_install",
+], help = "Install all application dependencies" }
+test = { cmd = "poetry run pytest", help = "Run application tests" }
+dev = { cmd = "poetry run python -X dev -m python_scaffold", help = "Start the application in development mode" }
+start = { cmd = "poetry run python -m python_scaffold", help = "Start the application in production mode" }
+
+
+[tool.pydocstyle]
+convention = "numpy"
+
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 119
+
+
+[tool.black]
+line-length = 119
+
+
+[tool.coverage.report]
+fail_under = 50
+show_missing = true
+skip_covered = true
+omit = ["src/app/__init__.py"]
+
+
+[tool.coverage.run]
+omit = ["src/app/__init__.py"]
+
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+addopts = """\
+    --cov=src \
+    --cov-report term-missing \
+    --cov-branch \
+    --mypy \
+    --pydocstyle \
+    """
+
+[tool.mypy]
+python_version = "3.10"
+plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+strict_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+show_error_context = true
+show_error_codes = true
+strict = true
+exclude = "tests"
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.bandit]
+exclude = ["tests", "venv"]
+tests = ["S201", "S301"]
+skips = ["S101", "S601"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+python_scaffold = "python_scaffold.app:start"
+python_scaffold_api = "python_scaffold.api:start"

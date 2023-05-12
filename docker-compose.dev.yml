@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  database_dev:
+    image: postgres:14.4-alpine
+    # platform is not needed for linux customer server only for M1 Macs
+    platform: linux/arm64/v8
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+  sftp_server_dev:
+    image: atmoz/sftp:alpine
+    # platform is not needed for linux customer server only for M1 Macs
+    platform: linux/amd64
+    restart: always
+    ports:
+      - "8008:22"
+    environment:
+      SFTP_USERS: username:password:1001:1001:/home/username:/bin/bash:0775
+    networks:
+      - turreta_network
+
+  python_scaffold_dev:
+    platform: linux/amd64
+    build:
+      # The `dockerfile` path is relative to the `context` dir
+      context: ./python-scaffold
+    restart: always
+    environment:
+      DATABASE_DSN: "postgresql://postgres:postgres@database_dev:5432/postgres"
+      EXTERNAL_API_AUTH_URL: "http://local.host.auth"
+      EXTERNAL_API_BASE_URL: "http://local.host"
+      PYTHONDEVMODE: "1"
+    ports:
+      - "8001:8001"
+
+networks:
+  turreta_network:
+    driver: bridge
